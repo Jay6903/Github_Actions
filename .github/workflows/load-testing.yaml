@@ -1,18 +1,25 @@
 name: Load Testing Workflow
 
-  schedule: 
-    - cron: '0 0 1 */3' # Runs every day at midnight UTC
+on:
+  schedule:
+    - cron: '0 0 1 */3 *' # Every 3 months on the 1st at midnight UTC
   push:
 
 jobs:
-    load-test:
-      runs-on: ubuntu-latest
-      steps:
-        - name: Checkout code
-          uses: actions/checkout@v2
+  load-test:
+    runs-on: ubuntu-latest
 
-        - name: Install Dependencies
-          uses: pip install -r requirements.txt
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-        - name: Run load test
-          run: locust -f load_test.py --headless --users 50 --spawn-rate 10 --host https://jsonplaceholder.typicode.com --run-time 4s
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run load test
+        run: locust -f load_test.py --headless --users 50 --spawn-rate 10 --host https://jsonplaceholder.typicode.com --run-time 4s
